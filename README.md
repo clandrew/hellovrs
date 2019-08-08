@@ -32,3 +32,9 @@ Use the up and down arrow keys to select a combiner. There's three choices:
 * Min
 
 ![Example image](https://raw.githubusercontent.com/clandrew/hellovrs/master/Images/combine.PNG "Example image.")
+
+## Build and usage
+These samples were built using Visual Studio 2019, version 142 of the build tools. They run on x86-64 architecture. 
+The shaders for hellovrs_arrowkeys_tier2 are built using the Developer Command Promot for Visual Studio 2019.
+
+The samples are set up to run against the default hardware adapter; use of VRS requires a compatible system.
