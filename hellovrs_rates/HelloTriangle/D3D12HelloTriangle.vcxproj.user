@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <RemoteDebuggerServerName>DESKTOP-0ACEOOM</RemoteDebuggerServerName>
+    <RemoteDebuggerCommand>\\clandrew-5810\Samples\Desktop\D3D12HelloWorld\src\HelloTriangle\bin\x64\Debug\D3D12HelloTriangle.exe</RemoteDebuggerCommand>
+    <RemoteDebuggerWorkingDirectory>\\clandrew-5810\Samples\Desktop\D3D12HelloWorld\src\HelloTriangle\bin\x64\Debug</RemoteDebuggerWorkingDirectory>
+    <RemoteDebuggerConnection>RemoteWithoutAuthentication</RemoteDebuggerConnection>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <DebuggerFlavor>WindowsRemoteDebugger</DebuggerFlavor>
+    <RemoteDebuggerCommand>\\clandrew-5810\Share\Tmp\samples\d3d12\variablerateshading\D3D12VariableRateShading.exe</RemoteDebuggerCommand>
+    <RemoteDebuggerWorkingDirectory>\\clandrew-5810\Share\Tmp\samples\d3d12\variablerateshading\</RemoteDebuggerWorkingDirectory>
+    <RemoteDebuggerServerName>DESKTOP-K7J412I</RemoteDebuggerServerName>
+    <RemoteDebuggerConnection>RemoteWithAuthentication</RemoteDebuggerConnection>
+    <RemoteDebuggerDebuggerType>NativeOnly</RemoteDebuggerDebuggerType>
+  </PropertyGroup>
+</Project>

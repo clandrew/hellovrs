@@ -1,0 +1,9 @@
+/hellovrs_simple/HelloTriangle/bin/*
+/hellovrs_rates/HelloTriangle/bin/*
+/hellovrs_arrowkeys_tier2/HelloTriangle/bin/*
+/hellovrs_simple/HelloTriangle/obj/*
+/hellovrs_rates/HelloTriangle/obj/*
+/hellovrs_arrowkeys_tier2/HelloTriangle/obj/*
+/hellovrs_simple/.vs/*
+/hellovrs_rates/.vs/*
+/hellovrs_arrowkeys_tier2/.vs/*

@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2020
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "D3D12HelloTriangle", "HelloTriangle\D3D12HelloTriangle.vcxproj", "{5018F6A3-6533-4744-B1FD-727D199FD2E9}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|ARM64 = Debug|ARM64
+		Debug|x64 = Debug|x64
+		Release|ARM64 = Release|ARM64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5018F6A3-6533-4744-B1FD-727D199FD2E9}.Debug|ARM64.ActiveCfg = Debug|ARM64
+		{5018F6A3-6533-4744-B1FD-727D199FD2E9}.Debug|ARM64.Build.0 = Debug|ARM64
+		{5018F6A3-6533-4744-B1FD-727D199FD2E9}.Debug|x64.ActiveCfg = Debug|x64
+		{5018F6A3-6533-4744-B1FD-727D199FD2E9}.Debug|x64.Build.0 = Debug|x64
+		{5018F6A3-6533-4744-B1FD-727D199FD2E9}.Release|ARM64.ActiveCfg = Release|ARM64
+		{5018F6A3-6533-4744-B1FD-727D199FD2E9}.Release|ARM64.Build.0 = Release|ARM64
+		{5018F6A3-6533-4744-B1FD-727D199FD2E9}.Release|x64.ActiveCfg = Release|x64
+		{5018F6A3-6533-4744-B1FD-727D199FD2E9}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E02EF943-90FC-41AA-B9AF-12C38B9342B9}
+	EndGlobalSection
+EndGlobal
