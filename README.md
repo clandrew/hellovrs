@@ -11,7 +11,7 @@ Controls: Use the left and right arrow keys to select a shading rate, shown in t
 
 
 ## hellovrs_rates
-A bunch of shaded quads, one for each shading rate. Their shadings rate is specified through RSSetShadingRate API. Tier 1 compatible.
+A bunch of shaded quads, one for each shading rate. Their shading rate is specified through RSSetShadingRate API. Tier 1 compatible.
 
 Controls: none
 
@@ -35,7 +35,7 @@ Use the up and down arrow keys to select a combiner. There's three choices:
 
 ## Build and usage
 These samples were built using Visual Studio 2019, version 142 of the build tools. They run on x86-64 architecture. 
-The shaders for hellovrs_arrowkeys_tier2 are built using the Developer Command Promot for Visual Studio 2019.
+The shaders for hellovrs_arrowkeys_tier2 are built using the Developer Command Prompt for Visual Studio 2019.
 
 The samples are set up to run against the default hardware adapter; use of VRS requires a compatible system.
 
