@@ -391,6 +391,8 @@ void D3D12HelloTriangle::OnDestroy()
 	CloseHandle(m_fenceEvent);
 }
 
+bool needShadingRateImageStateChange = false;
+
 void D3D12HelloTriangle::PopulateCommandList()
 {
 	// Command list allocators can only be reset when the associated 
@@ -438,6 +440,13 @@ void D3D12HelloTriangle::PopulateCommandList()
 				}
 			}
 		}
+
+		if (needShadingRateImageStateChange)
+		{
+			m_commandList5->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(m_spScreenspaceImage.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_SHADING_RATE_SOURCE));
+			needShadingRateImageStateChange = false;
+		}
+
 		SetScreenspaceImageData(m_commandList5.Get(), screenspaceImageData.data(), screenspaceImageData.size());
 
 		if (m_combinerTypeIndex == 0)
@@ -468,6 +477,19 @@ void D3D12HelloTriangle::PopulateCommandList()
 
 	// Indicate that the back buffer will now be used to present.
 	m_commandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(m_renderTargets[m_frameIndex].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT));
+
+	// Unbind the shading rate image
+	m_commandList5->ClearState(m_pipelineState.Get());
+
+	// Put the shading rate image in some incompatible state. Shouldn't matter since it's not bound
+	m_commandList5->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(m_spScreenspaceImage.Get(), D3D12_RESOURCE_STATE_SHADING_RATE_SOURCE, D3D12_RESOURCE_STATE_COPY_DEST));
+	needShadingRateImageStateChange = true;
+
+	// Do an extra draw to further test things
+	m_commandList->SetGraphicsRootSignature(m_rootSignature.Get());
+	m_commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	m_commandList->IASetVertexBuffers(0, 1, &m_vertexBufferView);
+	m_commandList->DrawInstanced(3, 1, 0, 0);
 
 	ThrowIfFailed(m_commandList->Close());
 }
