@@ -38,14 +38,47 @@ typedef enum D3D12_SHADING_RATE
 
 	
 	*/
-	result.shadingRate = 0xa;
+	result.shadingRate = 0xABCD;
 
 	return result;
 }
 
+
+
+float4 PickShadingRateColor(uint shadingRate)
+{
+	float4 col = float4(0, 0, 0, 0);
+	switch (shadingRate)
+	{
+	case 0x0: // fine shading
+		col = float4(1, 0, 0, 1); // Red
+		break;
+	case 0x5: // 2x2
+		col = float4(0, 0, 1, 1); // Blue
+		break;
+	case 0xA: // 4x4
+		col = float4(0, 1, 0, 1); // Green
+		break;
+	default:
+		col = float4(1, 0, 1, 1); // Magenta
+	}
+
+	return col;
+}
+
 float4 PSMain(PSInput input) : SV_TARGET
 {
-	float4 color = float4(sin(input.position.x / 10.0f), sin(input.position.y / 10.0f), cos((input.position.x + input.position.y) / 10.0f), 1);
+	float4 color;
+	if (input.position.y < 50)
+	{
+		color = PickShadingRateColor(input.shadingRate);
+	}
+	else
+	{
+		color = float4(sin(input.position.x / 10.0f), sin(input.position.y / 10.0f), cos((input.position.x + input.position.y) / 10.0f), 1);
+	}
+
+
 
 	return color;
 }
