@@ -5,6 +5,7 @@ struct PSInput
 	uint shadingRate : SV_SHADINGRATE;
 };
 
+<<<<<<< HEAD
 float4 PickShadingRateColor(uint shadingRate)
 {
 	float4 col = float4(0, 0, 0, 0);
@@ -38,9 +39,12 @@ float4 PickShadingRateColor(uint shadingRate)
 	return col;
 }
 
+
+=======
+>>>>>>> master
 float4 PSMain(PSInput input) : SV_TARGET
 {
-	float4 color = PickShadingRateColor(input.shadingRate);
+	float4 color = float4(sin(input.position.x / 10.0f), sin(input.position.y / 10.0f), cos((input.position.x + input.position.y) / 10.0f), 1);
 
 	return color;
 }
