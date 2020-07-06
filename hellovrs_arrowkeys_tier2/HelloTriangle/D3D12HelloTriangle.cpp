@@ -416,47 +416,8 @@ void D3D12HelloTriangle::PopulateCommandList()
 
 	if (m_commandList5 && m_platformSupportsTier2VRS)
 	{
-		static const D3D12_SHADING_RATE shadingRates[] = {
-			D3D12_SHADING_RATE_1X1, D3D12_SHADING_RATE_1X2,D3D12_SHADING_RATE_2X1, D3D12_SHADING_RATE_2X2, D3D12_SHADING_RATE_2X4, D3D12_SHADING_RATE_4X2, D3D12_SHADING_RATE_4X4 };
-
-		D3D12_SHADING_RATE shadingRate = shadingRates[m_shadingRateIndex];
-
-		std::vector<BYTE> screenspaceImageData;
-		screenspaceImageData.resize(256 * 256);
-		for (int y = 0; y < 256; ++y)
-		{
-			for (int x = 0; x < 256; ++x)
-			{
-				int index = (y * 256) + x;
-				if (x > y)
-				{
-					screenspaceImageData[index] = static_cast<BYTE>(shadingRate);
-				}
-				else
-				{
-					screenspaceImageData[index] = static_cast<BYTE>(D3D12_SHADING_RATE_1X1);
-				}
-			}
-		}
-		SetScreenspaceImageData(m_commandList5.Get(), screenspaceImageData.data(), screenspaceImageData.size());
-
-		if (m_combinerTypeIndex == 0)
-		{
-			D3D12_SHADING_RATE_COMBINER chooseScreenspaceImage[2] = { D3D12_SHADING_RATE_COMBINER_PASSTHROUGH, D3D12_SHADING_RATE_COMBINER_OVERRIDE }; // Choose screenspace image
-			m_commandList5->RSSetShadingRate(shadingRate, chooseScreenspaceImage);
-		}
-		else if (m_combinerTypeIndex == 1)
-		{
-			D3D12_SHADING_RATE_COMBINER choosePerPrimitive[2] = { D3D12_SHADING_RATE_COMBINER_OVERRIDE, D3D12_SHADING_RATE_COMBINER_PASSTHROUGH }; // Choose per primitive
-			m_commandList5->RSSetShadingRate(shadingRate, choosePerPrimitive);
-		}
-		else if (m_combinerTypeIndex == 2)
-		{
-			D3D12_SHADING_RATE_COMBINER chooseMin[2] = { D3D12_SHADING_RATE_COMBINER_MIN, D3D12_SHADING_RATE_COMBINER_MIN };
-			m_commandList5->RSSetShadingRate(shadingRate, chooseMin);
-		}
-
-		m_commandList5->RSSetShadingRateImage(m_spScreenspaceImage.Get());
+		D3D12_SHADING_RATE_COMBINER combiners[2] = { D3D12_SHADING_RATE_COMBINER_SUM, D3D12_SHADING_RATE_COMBINER_PASSTHROUGH };
+		m_commandList5->RSSetShadingRate(D3D12_SHADING_RATE_4X4, combiners);
 	}
 
 	// Record commands.
@@ -499,23 +460,6 @@ void D3D12HelloTriangle::OnKeyUp(UINT8 key)
 	if (!m_platformSupportsTier2VRS)
 		return;
 
-	if (key == 37 && m_shadingRateIndex > 0) // left
-	{
-		m_shadingRateIndex--;
-	}
-	if (key == 39 && m_shadingRateIndex < 7 - 1) // right
-	{
-		m_shadingRateIndex++;
-	}
-	else if (key == 38 && m_combinerTypeIndex < 2) // up
-	{
-		m_combinerTypeIndex++;
-	}
-	else if (key == 40 && m_combinerTypeIndex > 0) // down
-	{
-		m_combinerTypeIndex--;
-	}
-
 	UpdateTitleText();
 }
 
@@ -525,27 +469,7 @@ void D3D12HelloTriangle::UpdateTitleText()
 
 	if (m_platformSupportsTier2VRS)
 	{
-		wchar_t const* shadingRateTitle = L"";
-		switch (m_shadingRateIndex)
-		{
-		case 0: shadingRateTitle = L"1x1"; break;
-		case 1: shadingRateTitle = L"1x2"; break;
-		case 2: shadingRateTitle = L"2x1"; break;
-		case 3: shadingRateTitle = L"2x2"; break;
-		case 4: shadingRateTitle = L"2x4"; break;
-		case 5: shadingRateTitle = L"4x2"; break;
-		case 6: shadingRateTitle = L"4x4"; break;
-		}
-
-		wchar_t const* combinerTitle = L"";
-		switch (m_combinerTypeIndex)
-		{
-		case 0: combinerTitle = L"AlwaysScreenspace"; break;
-		case 1: combinerTitle = L"AlwaysPerPrimitive"; break;
-		case 2: combinerTitle = L"Min"; break;
-		}
-
-		titleText << L"Screenspace image rate: " << shadingRateTitle << L"  Per-primitive rate: 4x4  Combiner:" << combinerTitle;
+		titleText << L"Sum of 4x4 on the command list and 2x2 per-primitive";
 	}
 	else
 	{

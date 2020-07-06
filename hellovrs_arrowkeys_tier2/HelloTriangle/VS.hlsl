@@ -27,7 +27,7 @@ typedef enum D3D12_SHADING_RATE
 
 
 	*/
-	result.shadingRate = 0xa;
+	result.shadingRate = 0x5;
 
 	return result;
 }
