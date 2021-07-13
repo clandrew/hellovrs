@@ -135,24 +135,57 @@ void D3D12HelloTriangle::LoadPipeline()
 	ThrowIfFailed(m_device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_commandAllocator)));
 }
 
+
 void
 CompileAndCheckErrors(_In_ LPCWSTR pFileName,
-    _In_reads_opt_(_Inexpressible_(pDefines->Name != NULL)) CONST D3D_SHADER_MACRO* pDefines,
-    _In_opt_ ID3DInclude* pInclude,
-    _In_ LPCSTR pEntrypoint,
-    _In_ LPCSTR pTarget,
-    _In_ UINT Flags1,
-    _In_ UINT Flags2,
-    _Out_ ID3DBlob** ppCode)
+	_In_reads_opt_(_Inexpressible_(pDefines->Name != NULL)) CONST D3D_SHADER_MACRO* pDefines,
+	_In_opt_ ID3DInclude* pInclude,
+	_In_ LPCWSTR pEntrypoint,
+	_In_ LPCWSTR pTarget,
+	_In_ UINT Flags1,
+	_In_ UINT Flags2,
+	_Out_ IDxcBlob** ppCode)
 {
-    ComPtr<ID3DBlob> errorMsgs;
-    HRESULT hr = D3DCompileFromFile(pFileName, pDefines, pInclude, pEntrypoint, pTarget, Flags1, Flags2, ppCode, &errorMsgs);
-    if (FAILED(hr))
-    {
-        char const* errorMsg = reinterpret_cast<char*>(errorMsgs->GetBufferPointer());
-        MessageBoxA(nullptr, errorMsg, "Failed to compile shader", MB_OK);
-        ThrowIfFailed(hr);
-    }
+	ComPtr<IDxcLibrary> library;
+	ThrowIfFailed(DxcCreateInstance(CLSID_DxcLibrary, IID_PPV_ARGS(&library)));
+
+	ComPtr<IDxcCompiler> compiler;
+	ThrowIfFailed(DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(&compiler)));
+
+	uint32_t codePage = CP_UTF8;
+	ComPtr<IDxcBlobEncoding> sourceBlob;
+	ThrowIfFailed(library->CreateBlobFromFile(pFileName, &codePage, &sourceBlob));
+
+	ComPtr<IDxcOperationResult> result;
+	ThrowIfFailed(compiler->Compile(
+		sourceBlob.Get(), // pSource
+		pFileName, // pSourceName
+		pEntrypoint, // pEntryPoint
+		pTarget, // pTargetProfile
+		NULL, 0, // pArguments, argCount
+		NULL, 0, // pDefines, defineCount
+		NULL, // pIncludeHandler
+		&result)); // ppResult
+
+	HRESULT hr;
+	ThrowIfFailed(result->GetStatus(&hr));
+
+	if (FAILED(hr) && result)
+	{
+		ComPtr<IDxcBlobEncoding> errorsBlob;
+		hr = result->GetErrorBuffer(&errorsBlob);
+		if (SUCCEEDED(hr) && errorsBlob)
+		{
+			char const* errorMsg = reinterpret_cast<char*>(errorsBlob->GetBufferPointer());
+			MessageBoxA(nullptr, errorMsg, "Failed to compile shader", MB_OK);
+			return;
+		}
+	}
+
+	if (result)
+	{
+		result->GetResult(ppCode);
+	}
 }
 
 void D3D12HelloTriangle::AddQuad(float left, float bottom, float quadSize)
@@ -185,22 +218,22 @@ void D3D12HelloTriangle::LoadAssets()
 
 	// Create the pipeline state, which includes compiling and loading shaders.
 	{
-		ComPtr<ID3DBlob> vertexShader;
-		ComPtr<ID3DBlob> pixelShader;
-		ComPtr<ID3DBlob> domainShader;
-		ComPtr<ID3DBlob> hullShader;
+		ComPtr<IDxcBlob> vertexShader;
+		ComPtr<IDxcBlob> pixelShader;
+		ComPtr<IDxcBlob> domainShader;
+		ComPtr<IDxcBlob> hullShader;
 
 #if defined(_DEBUG)
 		// Enable better shader debugging with the graphics debugging tools.
-		UINT compileFlags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
+		UINT compileFlags = 0;
 #else
 		UINT compileFlags = 0;
 #endif
 
-        CompileAndCheckErrors(GetAssetFullPath(L"shaders.hlsl").c_str(), nullptr, nullptr, "VSMain", "vs_5_0", compileFlags, 0, &vertexShader);
-        CompileAndCheckErrors(GetAssetFullPath(L"shaders.hlsl").c_str(), nullptr, nullptr, "PSMain", "ps_5_0", compileFlags, 0, &pixelShader);
-		CompileAndCheckErrors(GetAssetFullPath(L"shaders.hlsl").c_str(), nullptr, nullptr, "DSMain", "ds_5_0", compileFlags, 0, &domainShader);
-		CompileAndCheckErrors(GetAssetFullPath(L"shaders.hlsl").c_str(), nullptr, nullptr, "HSMain", "hs_5_0", compileFlags, 0, &hullShader);
+        CompileAndCheckErrors(GetAssetFullPath(L"shaders.hlsl").c_str(), nullptr, nullptr, L"VSMain", L"vs_6_4", compileFlags, 0, &vertexShader);
+        CompileAndCheckErrors(GetAssetFullPath(L"shaders.hlsl").c_str(), nullptr, nullptr, L"PSMain", L"ps_6_4", compileFlags, 0, &pixelShader);
+		CompileAndCheckErrors(GetAssetFullPath(L"shaders.hlsl").c_str(), nullptr, nullptr, L"DSMain", L"ds_6_4", compileFlags, 0, &domainShader);
+		CompileAndCheckErrors(GetAssetFullPath(L"shaders.hlsl").c_str(), nullptr, nullptr, L"HSMain", L"hs_6_4", compileFlags, 0, &hullShader);
 
 		// Define the vertex input layout.
 		D3D12_INPUT_ELEMENT_DESC inputElementDescs[] =
@@ -213,10 +246,10 @@ void D3D12HelloTriangle::LoadAssets()
 		D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
 		psoDesc.InputLayout = { inputElementDescs, _countof(inputElementDescs) };
 		psoDesc.pRootSignature = m_rootSignature.Get();
-		psoDesc.VS = CD3DX12_SHADER_BYTECODE(vertexShader.Get());
-		psoDesc.PS = CD3DX12_SHADER_BYTECODE(pixelShader.Get());
-		psoDesc.DS = CD3DX12_SHADER_BYTECODE(domainShader.Get());
-		psoDesc.HS = CD3DX12_SHADER_BYTECODE(hullShader.Get());
+		psoDesc.VS = CD3DX12_SHADER_BYTECODE(vertexShader->GetBufferPointer(), vertexShader->GetBufferSize());
+		psoDesc.PS = CD3DX12_SHADER_BYTECODE(pixelShader->GetBufferPointer(), pixelShader->GetBufferSize());
+		psoDesc.DS = CD3DX12_SHADER_BYTECODE(domainShader->GetBufferPointer(), domainShader->GetBufferSize());
+		psoDesc.HS = CD3DX12_SHADER_BYTECODE(hullShader->GetBufferPointer(), hullShader->GetBufferSize());
 		psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 		psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
 		psoDesc.DepthStencilState.DepthEnable = FALSE;
