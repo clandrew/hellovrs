@@ -31,3 +31,38 @@ float4 PSMain(PSInput input) : SV_TARGET
 
 	return color;
 }
+
+struct PatchConstants
+{
+	float TessFactor[3] : SV_TessFactor;
+	float InsideTess : SV_InsideTessFactor;
+};
+
+PatchConstants hs_patch(InputPatch<PSInput, 3> patch)
+{
+	PatchConstants ret = { {0, 0, 0}, 0 };
+	return ret;
+}
+
+[patchconstantfunc("hs_patch")]
+[domain("tri")]
+[partitioning("integer")]
+[outputtopology("triangle_cw")]
+[maxtessfactor(64.0)]
+[outputcontrolpoints(3)]
+PSInput HSMain(InputPatch<PSInput, 3> patch, uint cpid : SV_OutputControlPointID)
+{
+	PSInput result;
+	result.position = float4(0, 0, 0, 0);
+	result.color = float4(0, 0, 0, 0);
+	return result;
+}
+
+[domain("tri")]
+PSInput DSMain(OutputPatch<PSInput, 3> patch, PatchConstants patchConst, float3 location : SV_DomainLocation)
+{
+	PSInput result;
+	result.position = float4(0, 0, 0, 0);
+	result.color = float4(0, 0, 0, 0);
+	return result;
+}

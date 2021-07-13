@@ -187,6 +187,8 @@ void D3D12HelloTriangle::LoadAssets()
 	{
 		ComPtr<ID3DBlob> vertexShader;
 		ComPtr<ID3DBlob> pixelShader;
+		ComPtr<ID3DBlob> domainShader;
+		ComPtr<ID3DBlob> hullShader;
 
 #if defined(_DEBUG)
 		// Enable better shader debugging with the graphics debugging tools.
@@ -197,6 +199,8 @@ void D3D12HelloTriangle::LoadAssets()
 
         CompileAndCheckErrors(GetAssetFullPath(L"shaders.hlsl").c_str(), nullptr, nullptr, "VSMain", "vs_5_0", compileFlags, 0, &vertexShader);
         CompileAndCheckErrors(GetAssetFullPath(L"shaders.hlsl").c_str(), nullptr, nullptr, "PSMain", "ps_5_0", compileFlags, 0, &pixelShader);
+		CompileAndCheckErrors(GetAssetFullPath(L"shaders.hlsl").c_str(), nullptr, nullptr, "DSMain", "ds_5_0", compileFlags, 0, &domainShader);
+		CompileAndCheckErrors(GetAssetFullPath(L"shaders.hlsl").c_str(), nullptr, nullptr, "HSMain", "hs_5_0", compileFlags, 0, &hullShader);
 
 		// Define the vertex input layout.
 		D3D12_INPUT_ELEMENT_DESC inputElementDescs[] =
@@ -211,12 +215,14 @@ void D3D12HelloTriangle::LoadAssets()
 		psoDesc.pRootSignature = m_rootSignature.Get();
 		psoDesc.VS = CD3DX12_SHADER_BYTECODE(vertexShader.Get());
 		psoDesc.PS = CD3DX12_SHADER_BYTECODE(pixelShader.Get());
+		psoDesc.DS = CD3DX12_SHADER_BYTECODE(domainShader.Get());
+		psoDesc.HS = CD3DX12_SHADER_BYTECODE(hullShader.Get());
 		psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 		psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
 		psoDesc.DepthStencilState.DepthEnable = FALSE;
 		psoDesc.DepthStencilState.StencilEnable = FALSE;
 		psoDesc.SampleMask = UINT_MAX;
-		psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+		psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_PATCH;
 		psoDesc.NumRenderTargets = 1;
 		psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
 		psoDesc.SampleDesc.Count = 1;
@@ -358,7 +364,7 @@ void D3D12HelloTriangle::PopulateCommandList()
 	// Record commands.
 	const float clearColor[] = { 0.0f, 0.2f, 0.4f, 1.0f };
 	m_commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
-	m_commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	m_commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST);
 	m_commandList->IASetVertexBuffers(0, 1, &m_vertexBufferView);
 
 
