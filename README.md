@@ -9,6 +9,7 @@ Controls: Use the left and right arrow keys to select a shading rate, shown in t
 
 ![Example image](https://raw.githubusercontent.com/clandrew/hellovrs/master/Images/simple.PNG "Example image.")
 
+This sample has both D3D12 and Vulkan versions.
 
 ## hellovrs_rates
 A bunch of shaded quads, one for each shading rate. Their shading rate is specified through RSSetShadingRate API. Tier 1 compatible.
@@ -38,6 +39,8 @@ These samples were built using Visual Studio 2019, version 142 of the build tool
 The shaders for hellovrs_arrowkeys_tier2 are built using the Developer Command Prompt for Visual Studio 2019.
 
 The samples are set up to run against the default hardware adapter; use of VRS requires a compatible system.
+
+The Vulkan sample requires the Vulkan SDK. You'll have to edit the project file and CompileShaders.bat to point it to your SDK.
 
 ## See also
 The spec for Variable Rate Shading can be viewed [here](https://github.com/microsoft/DirectX-Specs/blob/master/d3d/VariableRateShading.md).
