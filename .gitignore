@@ -1,6 +1,8 @@
 /hellovrs_simple/D3D12/HelloTriangle/bin/*
 /hellovrs_simple/D3D12/HelloTriangle/obj/*
 /hellovrs_simple/D3D12/.vs/*
+/hellovrs_simple/Vulkan/.vs/*
+/hellovrs_simple/Vulkan/x64/*
 
 /hellovrs_rates/HelloTriangle/bin/*
 /hellovrs_arrowkeys_tier2/HelloTriangle/bin/*
